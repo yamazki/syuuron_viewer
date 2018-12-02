@@ -40,7 +40,6 @@ export default {
         data: this.functionList[key].function.processList.process.map(process => process.processingTime),
         backgroundColor: this.functionList[key].function.processList.process.map(process => process.communication === "true"  ?  "red" : "blue")
         }];
-      console.table(this.datacollection.datasets);
       this.$refs.bar.renderChart(this.datacollection, this.options);
       this.datacollection.labels = [];
     },
@@ -61,7 +60,7 @@ export default {
           text: '' 
         },
         legend: {
-          display: false,
+          display: true,
         },
         scales: {
           yAxes: [
