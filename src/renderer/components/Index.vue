@@ -73,25 +73,40 @@ export default {
   mounted() {
     const directoryPath = 'C:/Users/ma17123/source/repos/syuuron/syuuron/XML/EvaluationResult/';
     
-    const getFunctionInformationListFormOfJson = async (DirectoryPath) => {
-      const filePathList = await util.promisify(fs.readdir)(directoryPath)
-                                     .then(Pathlist => Pathlist.map(path => directoryPath + path));
+    const getFilePaths = async (directroyPath) =>  {
+      return await util.promisify(fs.readdir)(directoryPath)
+                       .then(Pathlist => Pathlist.map(path => directoryPath + path));
+    }
+    
+    const getFunctionInformationListFormOfJson = async (directoryPath) => {
+      const filePaths  = await getFilePaths(directoryPath);
       const functionInformationList = []; 
-      for(let key in filePathList) {
-          await util.promisify(fs.readFile)(filePathList[key], {encoding : 'utf8'})
+      for(let key in filePaths) {
+          await util.promisify(fs.readFile)(filePaths[key], {encoding : 'utf8'})
                     .then(xmlFileData => functionInformationList.push(parser.xml2json(xmlFileData)))
                     .catch(err => console.log(err));
       }
       this.functionList = functionInformationList;
       console.table(this.functionList);
-      return functionInformationList;
+      return functionInformationList;this.currentFunctionNumber
     };
+    
     getFunctionInformationListFormOfJson(directoryPath);
     
-    fs.watch(directoryPath, async () => {
-       await getFunctionInformationListFormOfJson(directoryPath);
-       this.drawChart(this.currentFunctionNumber);
-    });
+    
+    // ファイルが変更された場合、対応するグラフの要素を更新
+    ( async (directoryPath) => {
+      const filePaths  = await getFilePaths(directoryPath);
+      filePaths.forEach((filePath, key) => {
+        const vue = this;
+        fs.watch(filePath, async() => {
+          await getFunctionInformationListFormOfJson(directoryPath);
+          if(key == vue.currentFunctionNumber) {
+            vue.drawChart(vue.currentFunctionNumber);
+          }
+        });
+      });
+    })();
     
   },
 }
