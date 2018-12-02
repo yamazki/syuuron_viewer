@@ -27,45 +27,30 @@ export default {
   
   methods: {
     drawChart: function(key) {
-      this.options.title.text = this.functionList[key].function.functionName.replace(">","");
+      this.currentFunctionNumber = key;
+      this.options.title.text = this.functionList[key].function.functionName.replace(">","") 
+                               +",  "
+                               +"総処理時間"
+                               + this.functionList[key].function.totalProcessingTime;
       this.functionList[key].function.processList.process.forEach(process => this.datacollection.labels.push(process.name));
       this.datacollection.datasets = 
         [{
-        label: 'ProcessingTime',
+        label: '処理時間',
         data: this.functionList[key].function.processList.process.map(process => process.processingTime)
         }];
       this.$refs.bar.renderChart(this.datacollection, this.options);
       this.datacollection.labels = [];
     },
-    pu: function(key) {
-      this.options.title.text = this.functionList[key].function.functionName.replace(">","");
-      console.log(this.options.title.text);
-      this.datacollection.labels.push("test");
-      this.datacollection.labels.push("test");
-      this.datacollection.labels.push("test");
-      this.datacollection.datasets = [{data: [10,20,30]}];
-      console.table(this.functionList);
-      console.table(this.datacollection.datasets);
-      console.table(this.datacollection.datasets.data);
-      this.$refs.bar.renderChart(this.datacollection, this.options);
-    }
   },
   
   
   data () {
     return {
       functionList: [],
+      currentFunctionNumber: 0,
       datacollection: {
         labels: [],
-        datasets: [
-          {
-            label: '',
-            data: [],
-            backgroundColor: [], 
-            borderColor: [],
-            borderWidth: 1,
-          },
-        ],
+        datasets: [],
       },
       options: {
         title: {
@@ -98,10 +83,15 @@ export default {
                     .catch(err => console.log(err));
       }
       this.functionList = functionInformationList;
+      console.table(this.functionList);
       return functionInformationList;
     };
-    
     getFunctionInformationListFormOfJson(directoryPath);
+    
+    fs.watch(directoryPath, async () => {
+       await getFunctionInformationListFormOfJson(directoryPath);
+       this.drawChart(this.currentFunctionNumber);
+    });
     
   },
 }
