@@ -1,14 +1,14 @@
 <template>
   <div>
     <div class="sideBar">
-      <ul>
-        <li v-for="func in functionList">{{ func.function.functionName.replace(">","") }}</li>
-      </ul>
+      <li v-for="(func, key) in functionList">
+        <el-button v-on:click="drawChart(key)">{{ func.function.functionName.replace(">","") }}</el-button>
+        
+      </li>
     </div>
     <div class="graph">
-      <bar ref="bar" :chartData="datacollection" :options="options" :height="100" />
+      <bar ref="bar" :chartData="datacollection" :options="options" :height="200" />
     </div>
-    <button v-on:click="pu"> test</button>
   </div>
 </template>
 
@@ -25,45 +25,53 @@ export default {
     Bar,
   },
   
-  
   methods: {
-    pu: function() {
+    drawChart: function(key) {
+      this.options.title.text = this.functionList[key].function.functionName.replace(">","");
+      this.functionList[key].function.processList.process.forEach(process => this.datacollection.labels.push(process.name));
+      this.datacollection.datasets = 
+        [{
+        label: 'ProcessingTime',
+        data: this.functionList[key].function.processList.process.map(process => process.processingTime)
+        }];
+      this.$refs.bar.renderChart(this.datacollection, this.options);
+      this.datacollection.labels = [];
+    },
+    pu: function(key) {
+      this.options.title.text = this.functionList[key].function.functionName.replace(">","");
+      console.log(this.options.title.text);
       this.datacollection.labels.push("test");
-      console.table(this.datacollection.labels);
+      this.datacollection.labels.push("test");
+      this.datacollection.labels.push("test");
+      this.datacollection.datasets = [{data: [10,20,30]}];
+      console.table(this.functionList);
+      console.table(this.datacollection.datasets);
+      console.table(this.datacollection.datasets.data);
       this.$refs.bar.renderChart(this.datacollection, this.options);
     }
   },
+  
   
   data () {
     return {
       functionList: [],
       datacollection: {
-        labels: ['赤', '青', '黄色', '緑', '紫', '橙'],
+        labels: [],
         datasets: [
           {
-            label: '得票数',
-            data: [12, 19, 3, 5, 2, 3],
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.2)',
-              'rgba(54, 162, 235, 0.2)',
-              'rgba(255, 206, 86, 0.2)',
-              'rgba(75, 192, 192, 0.2)',
-              'rgba(153, 102, 255, 0.2)',
-              'rgba(255, 159, 64, 0.2)',
-            ],
-            borderColor: [
-              'rgba(255,99,132,1)',
-              'rgba(54, 162, 235, 1)',
-              'rgba(255, 206, 86, 1)',
-              'rgba(75, 192, 192, 1)',
-              'rgba(153, 102, 255, 1)',
-              'rgba(255, 159, 64, 1)',
-            ],
+            label: '',
+            data: [],
+            backgroundColor: [], 
+            borderColor: [],
             borderWidth: 1,
           },
         ],
       },
       options: {
+        title: {
+          display: true,
+          text: '' 
+        },
         scales: {
           yAxes: [
             {
@@ -90,7 +98,6 @@ export default {
                     .catch(err => console.log(err));
       }
       this.functionList = functionInformationList;
-      console.table(this.functionList);
       return functionInformationList;
     };
     
@@ -102,12 +109,21 @@ export default {
 </script>
 
 <style>
-html, body, sideBar {
+html, body {
   height: 100%;
 }
-sideBar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+
+.sideBar {
+  float: left;
+  width: 20%;
+}
+
+.graph {
+  float: right;
+  width: 70%;
+}
+
+li {
+ list-style: none;
 }
 </style>
