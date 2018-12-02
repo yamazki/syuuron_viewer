@@ -33,11 +33,14 @@ export default {
                                +"総処理時間"
                                + this.functionList[key].function.totalProcessingTime;
       this.functionList[key].function.processList.process.forEach(process => this.datacollection.labels.push(process.name));
+      this.functionList[key].function.processList.process.forEach(process => console.log(typeof process.communication));
       this.datacollection.datasets = 
         [{
         label: '処理時間',
-        data: this.functionList[key].function.processList.process.map(process => process.processingTime)
+        data: this.functionList[key].function.processList.process.map(process => process.processingTime),
+        backgroundColor: this.functionList[key].function.processList.process.map(process => process.communication === "true"  ?  "red" : "blue")
         }];
+      console.table(this.datacollection.datasets);
       this.$refs.bar.renderChart(this.datacollection, this.options);
       this.datacollection.labels = [];
     },
@@ -98,11 +101,11 @@ export default {
     ( async (directoryPath) => {
       const filePaths  = await getFilePaths(directoryPath);
       filePaths.forEach((filePath, key) => {
-        const vue = this;
+        const self = this;
         fs.watch(filePath, async() => {
           await getFunctionInformationListFormOfJson(directoryPath);
-          if(key == vue.currentFunctionNumber) {
-            vue.drawChart(vue.currentFunctionNumber);
+          if(key == self.currentFunctionNumber) {
+            self.drawChart(self.currentFunctionNumber);
           }
         });
       });
