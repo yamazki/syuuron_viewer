@@ -36,7 +36,7 @@ export default {
       this.functionList[key].function.processList.process.forEach(process => console.log(typeof process.communication));
       this.datacollection.datasets = 
         [{
-        label: '処理時間',
+        label: ["処理時間", "通信時間"] ,
         data: this.functionList[key].function.processList.process.map(process => process.processingTime),
         backgroundColor: this.functionList[key].function.processList.process.map(process => process.communication === "true"  ?  "red" : "blue")
         }];
@@ -59,6 +59,9 @@ export default {
         title: {
           display: true,
           text: '' 
+        },
+        legend: {
+          display: false,
         },
         scales: {
           yAxes: [
@@ -97,7 +100,7 @@ export default {
     getFunctionInformationListFormOfJson(directoryPath);
     
     
-    // ファイルが変更された場合、対応するグラフの要素を更新
+    // ファイルが変更された場合、現在開いているグラフのみを更新
     ( async (directoryPath) => {
       const filePaths  = await getFilePaths(directoryPath);
       filePaths.forEach((filePath, key) => {
