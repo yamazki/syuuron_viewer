@@ -7,8 +7,13 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'timeEvaluation-page',
+      name: 'index-page',
       component: require('@/components/Index').default
+    },
+    {
+      path: '/processingtimegraph',
+      name: 'processingtimegraph-page',
+      component: require('@/components/ProcessingTimeGraph').default
     },
     {
       path: '/recommend',
