@@ -1,6 +1,14 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+  <el-menu :router="true"
+  mode="horizontal"
+  background-color="#545c64"
+  text-color="#fff"
+  active-text-color="#ffd04b">
+    <el-menu-item index="1" :route="{name:'timeEvaluation-page'}">処理時間評価機能</el-menu-item>
+    <el-menu-item index="2" :route="{name:'recommend-page'}">推薦機能</el-menu-item>
+  </el-menu>       
+  <router-view> </router-view>
   </div>
 </template>
 
@@ -11,5 +19,5 @@
 </script>
 
 <style>
-  /* CSS */
+
 </style>

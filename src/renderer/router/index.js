@@ -7,8 +7,13 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'landing-page',
+      name: 'timeEvaluation-page',
       component: require('@/components/Index').default
+    },
+    {
+      path: '/recommend',
+      name: 'recommend-page',
+      component: require('@/components/Recommend').default
     },
     {
       path: '*',

@@ -58,7 +58,7 @@ export default {
           text: '' 
         },
         legend: {
-          display: true,
+          display: false,
         },
         scales: {
           yAxes: [
@@ -91,14 +91,14 @@ export default {
       }
       this.functionList = functionInformationList;
       console.table(this.functionList);
-      return functionInformationList;this.currentFunctionNumber
+      return functionInformationList;
     };
     
     getFunctionInformationListFormOfJson(directoryPath);
     
     
-    // ファイルが変更された場合、現在開いているグラフのみを更新
-    ( async (directoryPath) => {
+    // ファイルが変更された場合、現在開いているグラフのみを更新するイベントの登録
+    (async (directoryPath) => {
       const filePaths  = await getFilePaths(directoryPath);
       filePaths.forEach((filePath, key) => {
         const self = this;
