@@ -33,6 +33,7 @@ export default {
                                +"総処理時間"
                                + this.functionList[key].function.totalProcessingTime;
       this.datacollection.labels = this.functionList[key].function.processList.process.map(process => process.name); 
+      console.table(this.datacollection.labels);
       this.datacollection.datasets = 
         [{
         label: ["処理時間", "通信時間"] ,
