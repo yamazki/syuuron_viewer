@@ -1,14 +1,16 @@
 <template>
   <div>
-    <div class="sideBar">
-      <li v-for="(func, key) in functionList">
-        <el-button v-on:click="drawChart(key)">{{ func.function.functionName.replace(">","") }}</el-button>
-        
-      </li>
-    </div>
-    <div class="graph">
-      <bar ref="bar" :chartData="datacollection" :options="options" :height="200" />
-    </div>
+    <el-container>
+      <el-aside width="200px">
+        <br></br>
+        <li v-for="(func, key) in functionList">
+          <el-button v-on:click="drawChart(key)">{{ func.function.functionName.replace(">","") }}</el-button>
+        </li>
+      </el-aside>
+      <el-main>
+        <bar ref="bar" :chartData="datacollection" :options="options" :height="250" />
+      </el-main>
+    </el-container>
   </div>
 </template>
 
@@ -121,15 +123,6 @@ html, body {
   height: 100%;
 }
 
-.sideBar {
-  float: left;
-  width: 20%;
-}
-
-.graph {
-  float: right;
-  width: 70%;
-}
 
 li {
  list-style: none;
