@@ -37,27 +37,8 @@ export default {
   
   methods: {
     showRecommendDevices: function(key) {
-      // 条件を満たすDeviceの数により型が変動
-      // 0 -> undefined
-      // 1 -> Object
-      // 2以上 -> Array
-      const recommendDevices = this.recommendDevices[key].recommendList.recommendDeviceList.recommendDevice;
-      if(typeof recommendDevices === "undefined") {
-        this.lists = [];
-        return;
-      }
-      else if(recommendDevices instanceof Array) {
-        this.lists = recommendDevices.map(recommendDevice => recommendDevice.name);
-        console.log(this.lists);
-      }
-      else {
-        this.lists = [recommendDevices.name];
-      }
-    //  const obj = this.recommendDevices[key].recommendList.recommendDeviceList;
-    //  const result = Object.entries(obj).map(([key, value]) => ({key, value}))
-    //  console.log(result);
-    //  console.log(this.recommendDevices[key].recommendList.recommendDeviceList);
-    //  this.lists = this.recommendDevices[key].recommendList.recommendDeviceList.recommendDevice.map(recommendDevice => recommendDevice.name);
+      this.lists = Object.entries(this.recommendDevices[key].recommendList.recommendDeviceList.recommendDevice).map(recommendDevice => recommendDevice.name);
+      console.log(Object.entries(this.recommendDevices[key].recommendList.recommendDeviceList.recommendDevice));
     }
   },
   
@@ -73,7 +54,7 @@ export default {
       const filePaths  = await getFilePaths(directoryPath);
       for(const filePath in filePaths) {
           const fileDataOfXml = await util.promisify(fs.readFile)(filePaths[filePath], {encoding : 'utf8'})
-          const fileDataOfJson = parser.xml2json(fileDataOfXml, {arrayNotation: true});
+          const fileDataOfJson = parser.xml2json(fileDataOfXml);
           const fileDataType = fileDataOfJson.recommendList.type;
           switch(fileDataType) {
             case "device": 

@@ -1,10 +1,10 @@
 <template>
   <div>
     <el-container>
-      <el-aside width="200px">
+      <el-aside width="250px">
         <br></br>
         <li v-for="(func, key) in functionList">
-          <el-button v-on:click="drawChart(key)">{{ func.function.functionName.replace(">","") }}</el-button>
+          <el-button  style="width: 100%" v-on:click="drawChart(key)">{{ func.function.functionName.replace(">","") }}</el-button>
         </li>
       </el-aside>
       <el-main>
@@ -85,15 +85,12 @@ export default {
     
     const getFunctionInformationListFormOfJson = async (directoryPath) => {
       const filePaths  = await getFilePaths(directoryPath);
-      const functionInformationList = []; 
-      for(let key in filePaths) {
-          await util.promisify(fs.readFile)(filePaths[key], {encoding : 'utf8'})
-                    .then(xmlFileData => functionInformationList.push(parser.xml2json(xmlFileData)))
+      for(const filePath in filePaths) {
+          await util.promisify(fs.readFile)(filePaths[filePath], {encoding : 'utf8'})
+                    .then(fileDataOfXml => this.functionList.push(parser.xml2json(fileDataOfXml)))
                     .catch(err => console.log(err));
       }
-      this.functionList = functionInformationList;
       console.table(this.functionList);
-      return functionInformationList;
     };
     
     getFunctionInformationListFormOfJson(directoryPath);
