@@ -2,7 +2,7 @@
   <div>
     <el-container>
       <el-aside width="250px">
-        <br></br>
+      <h2>Functions</h2>
         <li v-for="(func, key) in functionList">
           <el-button  style="width: 100%" v-on:click="drawChart(key)">{{ func.function.functionName.replace(">","") }}</el-button>
         </li>

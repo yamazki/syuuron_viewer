@@ -4,15 +4,60 @@
     <el-aside width="250px">
       <h2>Devices</h2>
       <li v-for="(deviceName, key) in deviceNames">
-        <el-button style="width: 100%" v-on:click="showRecommendDevices(key)">{{ deviceName.replace(">","") }}</el-button>
+        <el-button style="width: 100%" v-on:click="showRecommendDevices(key); renderDeviceTable();">{{ deviceName.replace(">","") }}</el-button>
       </li>
       <h2>Communications</h2>
       <li v-for="(communicationName, key) in communicationNames">
-        <el-button style="width: 100%">{{ communicationName.replace(">","") }}</el-button>
+        <el-button style="width: 100%" v-on:click="showRecommendCommunications(key); renderCommunicationTable()">{{ communicationName.replace(">","") }}</el-button>
       </li>
     </el-aside>
     <el-main>
-      <li v-for="(list, key) in lists">{{list}}</li>
+      <div v-if="showDevices.length > 0">
+        <el-table
+          :data="tableData"
+          stripe
+          style="width: 100%">
+          <el-table-column
+            prop="name"
+            label="Name"
+            width="180">
+          </el-table-column>
+          <el-table-column
+            prop="cpu"
+            label="CPU"
+            width="180">
+          </el-table-column>
+          <el-table-column
+            prop="memory"
+            label="Memory">
+          </el-table-column>
+        </el-table>
+      </div>
+      <div v-if="showCommunications.length > 0">
+        <el-table
+          :data="tableData"
+          stripe
+          style="width: 100%">
+          <el-table-column
+            prop="name"
+            label="Name"
+            width="180">
+          </el-table-column>
+          <el-table-column
+            prop="distance"
+            label="Distance"
+            width="180">
+          </el-table-column>
+          <el-table-column
+            prop="speed"
+            label="Speed">
+          </el-table-column>
+          <el-table-column
+            prop="powerSaving"
+            label="PowerSaving">
+          </el-table-column>
+        </el-table>
+      </div>
     </el-main>
   </el-container>
   </div>
@@ -31,33 +76,67 @@ export default {
       recommendDevices: [],
       recommendCommunications: [],
       recommendSoftware: [],
-      lists: []
+      showDevices: [],
+      showCommunications: [],
+      tableData: []
     }
   },
   
   methods: {
+    clearShowLists: function() {
+      this.showDevices = [];
+      this.showCommunications = [];
+      this.tableData = [];
+    },
+    
+    renderDeviceTable: function() {
+      this.showDevices.forEach(device => this.tableData.push({name: device.name,
+                                                              cpu: device.cpu,
+                                                              memory: device.memory}));
+    },
+    
+    renderCommunicationTable: function() {
+      this.showCommunications.forEach(communication => this.tableData.push({name: communication.name,
+                                                                     distance: communication.distance,
+                                                                     speed: communication.speed,
+                                                                     powerSaving: communication.powerSaving}));
+    },
+    
     showRecommendDevices: function(key) {
-      // 条件を満たすDeviceの数により型が変動
+      this.clearShowLists();
+      // 条件を満たすDeviceの数により型が変動,xml2json-lightの仕様
       // 0 -> undefined
       // 1 -> Object
       // 2以上 -> Array
-      const recommendDevices = this.recommendDevices[key].recommendList.recommendDeviceList.recommendDevice;
-      if(typeof recommendDevices === "undefined") {
-        this.lists = [];
-        return;
+      const Devices = this.recommendDevices[key].recommendList.recommendDeviceList.recommendDevice;
+      if(typeof Devices === "undefined") {
+        this.showDevices = [];
       }
-      else if(recommendDevices instanceof Array) {
-        this.lists = recommendDevices.map(recommendDevice => recommendDevice.name);
-        console.log(this.lists);
+      else if(Devices instanceof Array) {
+        this.showDevices= Devices;
+        console.table(this.showDevices);
       }
       else {
-        this.lists = [recommendDevices.name];
+        this.showDevices = [Devices];
       }
-    //  const obj = this.recommendDevices[key].recommendList.recommendDeviceList;
-    //  const result = Object.entries(obj).map(([key, value]) => ({key, value}))
-    //  console.log(result);
-    //  console.log(this.recommendDevices[key].recommendList.recommendDeviceList);
-    //  this.lists = this.recommendDevices[key].recommendList.recommendDeviceList.recommendDevice.map(recommendDevice => recommendDevice.name);
+    },
+
+    showRecommendCommunications: function(key) {
+      this.clearShowLists();
+      // 条件を満たすDeviceの数により型が変動,xml2json-lightの仕様
+      // 0 -> undefined
+      // 1 -> Object
+      // 2以上 -> Array
+      const Communications = this.recommendCommunications[key].recommendList.recommendCommunicationList.recommendCommunication;
+      if(typeof Communications === "undefined") {
+        this.showCommunications = [];
+      }
+      else if(Communications instanceof Array) {
+        this.showCommunications = Communications
+      }
+      else {
+        this.showCommunications = [Communications];
+      }
     }
   },
   
