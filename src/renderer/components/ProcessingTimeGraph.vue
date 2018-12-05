@@ -19,8 +19,6 @@ import fs from 'fs'
 import util from 'util'
 import parser from 'xml2json-light'
 import Bar from '@/components/Bar'
-
-
 export default {
   
   components: {
@@ -74,8 +72,7 @@ export default {
       },
     }
   },
-  
-  mounted() {
+    mounted() {
     const directoryPath = 'C:/Users/ma17123/source/repos/syuuron/syuuron/XML/EvaluationResult/';
     
     const getFilePaths = async (directroyPath) =>  {
@@ -85,12 +82,15 @@ export default {
     
     const getFunctionInformationListFormOfJson = async (directoryPath) => {
       const filePaths  = await getFilePaths(directoryPath);
-      for(const filePath in filePaths) {
-          await util.promisify(fs.readFile)(filePaths[filePath], {encoding : 'utf8'})
-                    .then(fileDataOfXml => this.functionList.push(parser.xml2json(fileDataOfXml)))
-                    .catch(err => console.log(err));
+      const functionInformationList = []; 
+      for(let key in filePaths) {
+        await util.promisify(fs.readFile)(filePaths[key], {encoding : 'utf8'})
+                  .then(xmlFileData => functionInformationList.push(parser.xml2json(xmlFileData)))
+                  .catch(err => console.log(err));
       }
+      this.functionList = functionInformationList;
       console.table(this.functionList);
+      return functionInformationList;
     };
     
     getFunctionInformationListFormOfJson(directoryPath);
@@ -109,18 +109,15 @@ export default {
         });
       });
     })();
-    
   },
 }
-
+  
 </script>
 
 <style>
 html, body {
   height: 100%;
 }
-
-
 li {
  list-style: none;
 }
