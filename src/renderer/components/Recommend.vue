@@ -9,7 +9,7 @@
         </el-button>
       </li>
       <h2>Communications</h2>
-      <li v-for="(communicationName, key) in recommnedCommunicationNames">
+      <li v-for="(communicationName, key) in recommendCommunicationNames">
         <el-button style="width: 100%" v-on:click="makeRecommendCommunicationTable(key); renderCommunicationTable()">
           {{ communicationName.replace(">","") }}
         </el-button>
@@ -76,10 +76,11 @@ export default {
   data () {
     return {
       recommendDeviceNames: [],
-      recommnedCommunicationNames: [],
+      recommendCommunicationNames: [],
       recommendDevices: [],
       recommendCommunications: [],
       recommendSoftware: [],
+      recommendSoftwareNames: [],
       tableDevices: [],
       tableCommunications: [],
       tableData: []
@@ -153,24 +154,36 @@ export default {
     
     const getRecommendListFormOfJson = async (directoryPath) => {
       const filePaths  = await getFilePaths(directoryPath);
+      const recommendDevices = [];
+      const recommendDeviceNames = [];
+      const recommendCommunications = [];
+      const recommendCommunicationNames = [];
+      const recommendSoftware = [];
+      const recommendSoftwareNames= [];
       for(const filePath in filePaths) {
           const fileDataFormOfXml = await util.promisify(fs.readFile)(filePaths[filePath], {encoding : 'utf8'})
           const fileDataFormOfJson = parser.xml2json(fileDataFormOfXml);
           const fileDataType = fileDataFormOfJson.recommendList.type;
           switch (fileDataType) {
             case "device": 
-              this.recommendDevices.push(fileDataFormOfJson);
-              this.recommendDeviceNames.push(fileDataFormOfJson.recommendList.targetDeviceName);
+              recommendDevices.push(fileDataFormOfJson);
+              recommendDeviceNames.push(fileDataFormOfJson.recommendList.targetDeviceName);
               break;
             case "communication": 
-              this.recommendCommunications.push(fileDataFormOfJson);
-              this.recommnedCommunicationNames.push(fileDataFormOfJson.recommendList.targetCommunicationName);
+              recommendCommunications.push(fileDataFormOfJson);
+              recommendCommunicationNames.push(fileDataFormOfJson.recommendList.targetCommunicationName);
               break;
             case "node": 
-              this.RecommendSoftware.push(fileDataFormOfJson);
+              RecommendSoftware.push(fileDataFormOfJson);
               break;
           }
       }
+      this.recommendDevices = recommendDevices;
+      this.recommendDeviceNames = recommendDeviceNames;
+      this.recommendCommunications = recommendCommunications;
+      this.recommendCommunicationNames = recommendCommunicationNames;
+      this.recommendSoftware = recommendSoftware;
+      this.recommendSoftwareNames = recommendSoftwareNames;
     };
     
     getRecommendListFormOfJson(directoryPath);
@@ -186,7 +199,7 @@ export default {
     //     const self = this;
     //     fs.watch(filePath, async() => {
     //       self.recommendDeviceNames = [];
-    //       self.recommnedCommunicationNames = [];
+    //       self.recommendCommunicationNames = [];
     //       self.recommendDevices =[];
     //       self.recommendCommunications =[];
     //       getRecommendListFormOfJson(directoryPath);
