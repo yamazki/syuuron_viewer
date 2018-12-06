@@ -27,7 +27,7 @@ export default {
   
   methods: {
     drawChart: function(key) {
-      this.currentFunctionNumber = key;
+      this.selectedFunctionNumber = key;
       this.options.title.text = this.functionList[key].function.functionName.replace(">","") 
                                +",  "
                                +"総処理時間"
@@ -47,7 +47,8 @@ export default {
   data () {
     return {
       functionList: [],
-      currentFunctionNumber: 0,
+      selectedFunctionNumber: 0,
+      flag: true,
       datacollection: {
         labels: [],
         datasets: [],
@@ -89,12 +90,10 @@ export default {
                   .catch(err => console.log(err));
       }
       this.functionList = functionInformationList;
-      console.table(this.functionList);
       return functionInformationList;
     };
     
     getFunctionInformationListFormOfJson(directoryPath);
-    
     
     // ファイルが変更された場合、現在開いているグラフのみを更新するイベントの登録
     (async (directoryPath) => {
@@ -102,9 +101,13 @@ export default {
       filePaths.forEach((filePath, key) => {
         const self = this;
         fs.watch(filePath, async() => {
-          await getFunctionInformationListFormOfJson(directoryPath);
-          if(key == self.currentFunctionNumber) {
-            self.drawChart(self.currentFunctionNumber);
+          if(self.flag === true) {
+            self.flag = false;
+            setTimeout(() => self.flag = true, 1000);
+            await getFunctionInformationListFormOfJson(directoryPath);
+          }
+          if(key === self.selectedFunctionNumber) {
+            self.drawChart(self.selectedFunctionNumber);
           }
         });
       });
