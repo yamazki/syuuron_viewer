@@ -37,7 +37,7 @@ export default {
         [{
         label: ["処理時間", "通信時間"] ,
         data: this.functionList[key].function.processList.process.map(process => process.processingTime),
-        backgroundColor: this.functionList[key].function.processList.process.map(process => process.communication === "true"  ?  "red" : "blue")
+        backgroundColor: this.functionList[key].function.processList.process.map(process => process.communication === "True" ? "red" : "blue")
         }];
       this.$refs.bar.renderChart(this.datacollection, this.options);
     },
