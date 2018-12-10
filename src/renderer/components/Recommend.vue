@@ -75,8 +75,10 @@ import parser from 'xml2json-light'
 export default {
   data () {
     return {
-      loadFileFlag: true,
+      loadFiles: true,
       recommendDeviceNames: [],
+      selectedNumber: 0,
+      selectedType: "",
       recommendCommunicationNames: [],
       recommendDevices: [],
       recommendCommunications: [],
@@ -97,19 +99,21 @@ export default {
     
     renderDeviceTable: function() {
       this.tableDevices.forEach(device => this.tableData.push({name: device.name,
-                                                              cpu: device.cpu,
-                                                              memory: device.memory}));
+                                                               cpu: device.cpu,
+                                                               memory: device.memory}));
     },
     
     renderCommunicationTable: function() {
       this.tableCommunications.forEach(communication => this.tableData.push({name: communication.name,
-                                                                     distance: communication.distance,
-                                                                     speed: communication.speed,
-                                                                     powerSaving: communication.powerSaving}));
+                                                                             distance: communication.distance,
+                                                                             speed: communication.speed,
+                                                                             powerSaving: communication.powerSaving}));
     },
     
     makeRecommendDevicesTalbe: function(key) {
       this.clearTableLists();
+      this.selectedNumber = key;
+      this.selectedType= "device";
       // 条件を満たすDeviceの数により型が変動,xml2json-lightの仕様
       // 0 -> undefined
       // 1 -> Object
@@ -128,6 +132,8 @@ export default {
 
     makeRecommendCommunicationTable: function(key) {
       this.clearTableLists();
+      this.selectedNumber = key;
+      this.selectedType= "communication";
       // 条件を満たすDeviceの数により型が変動,xml2json-lightの仕様
       // 0 -> undefined
       // 1 -> Object
@@ -155,36 +161,30 @@ export default {
     
     const getRecommendListFormOfJson = async (directoryPath) => {
       const filePaths  = await getFilePaths(directoryPath);
-      const recommendDevices = [];
-      const recommendDeviceNames = [];
-      const recommendCommunications = [];
-      const recommendCommunicationNames = [];
-      const recommendSoftware = [];
-      const recommendSoftwareNames= [];
+      this.recommendDevices = [];
+      this.recommendDeviceNames = [];
+      this.recommendCommunications = [];
+      this.recommendCommunicationNames = [];
+      this.recommendSoftware = [];
+      this.recommendSoftwareNames= [];
       for(const filePath in filePaths) {
           const fileDataFormOfXml = await util.promisify(fs.readFile)(filePaths[filePath], {encoding : 'utf8'})
           const fileDataFormOfJson = parser.xml2json(fileDataFormOfXml);
           const fileDataType = fileDataFormOfJson.recommendList.type;
           switch (fileDataType) {
             case "device": 
-              recommendDevices.push(fileDataFormOfJson);
-              recommendDeviceNames.push(fileDataFormOfJson.recommendList.targetDeviceName);
+              this.recommendDevices.push(fileDataFormOfJson);
+              this.recommendDeviceNames.push(fileDataFormOfJson.recommendList.targetDeviceName);
               break;
             case "communication": 
-              recommendCommunications.push(fileDataFormOfJson);
-              recommendCommunicationNames.push(fileDataFormOfJson.recommendList.targetCommunicationName);
+              this.recommendCommunications.push(fileDataFormOfJson);
+              this.recommendCommunicationNames.push(fileDataFormOfJson.recommendList.targetCommunicationName);
               break;
             case "node": 
-              RecommendSoftware.push(fileDataFormOfJson);
+              this.RecommendSoftware.push(fileDataFormOfJson);
               break;
           }
       }
-      this.recommendDevices = recommendDevices;
-      this.recommendDeviceNames = recommendDeviceNames;
-      this.recommendCommunications = recommendCommunications;
-      this.recommendCommunicationNames = recommendCommunicationNames;
-      this.recommendSoftware = recommendSoftware;
-      this.recommendSoftwareNames = recommendSoftwareNames;
       console.table(this.recommendDeviceNames);
     };
     
@@ -192,20 +192,24 @@ export default {
     
     
      // ファイルが変更された場合、現在開いているテーブルの更新を行う
-     (async (directoryPath) => {
-       const filePaths  = await getFilePaths(directoryPath);
-       filePaths.forEach((filePath, key) => {
-         const self = this;
-         fs.watch(filePath, async() => {
-          if(self.loadFileFlag === true) {
-            self.loadFileFlag = false;
-            setTimeout(() => self.loadFileFlag = true, 1000);
-            await getRecommendListFormOfJson(directoryPath);
-          }
-         });
-       });
-     })();
-    
+    fs.watch(directoryPath, async() => {
+      if(this.loadFiles === true) {
+        this.loadFiles = false;
+        setTimeout(() => this.loadFiles = true, 1000);
+        await getRecommendListFormOfJson(directoryPath);
+        switch(this.selectedType) {
+          case "device":
+            makeRecommendDevicesTalbe(this.selectedNumber);           
+            renderDeviceTable();
+            break;
+          case "communication":
+            makeRecommendCommunicationTable(this.selectedNumber);           
+            renderCommunicationTable();
+            break;
+        }
+        
+      }
+    });
   },
     
 }
