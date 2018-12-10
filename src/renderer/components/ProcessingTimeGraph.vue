@@ -48,7 +48,7 @@ export default {
     return {
       functionList: [],
       selectedFunctionNumber: 0,
-      flag: true,
+      loadFiles: true,
       datacollection: {
         labels: [],
         datasets: [],
@@ -96,22 +96,14 @@ export default {
     getFunctionInformationListFormOfJson(directoryPath);
     
     // ファイルが変更された場合、現在開いているグラフのみを更新するイベントの登録
-    (async (directoryPath) => {
-      const filePaths  = await getFilePaths(directoryPath);
-      filePaths.forEach((filePath, key) => {
-        const self = this;
-        fs.watch(filePath, async() => {
-          if(self.flag === true) {
-            self.flag = false;
-            setTimeout(() => self.flag = true, 1000);
-            await getFunctionInformationListFormOfJson(directoryPath);
-          }
-          if(key === self.selectedFunctionNumber) {
-            self.drawChart(self.selectedFunctionNumber);
-          }
-        });
-      });
-    })();
+    fs.watch(directoryPath, async() => {
+      if(this.loadFiles === true) {
+        this.loadFiles = false;
+        setTimeout(() => this.loadFiles = true, 1000);
+        await getFunctionInformationListFormOfJson(directoryPath);
+        this.drawChart(this.selectedFunctionNumber);
+      }
+    });
   },
 }
   

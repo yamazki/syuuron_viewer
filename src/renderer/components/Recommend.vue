@@ -75,6 +75,7 @@ import parser from 'xml2json-light'
 export default {
   data () {
     return {
+      loadFileFlag: true,
       recommendDeviceNames: [],
       recommendCommunicationNames: [],
       recommendDevices: [],
@@ -184,42 +185,26 @@ export default {
       this.recommendCommunicationNames = recommendCommunicationNames;
       this.recommendSoftware = recommendSoftware;
       this.recommendSoftwareNames = recommendSoftwareNames;
+      console.table(this.recommendDeviceNames);
     };
     
     getRecommendListFormOfJson(directoryPath);
     
-    fs.watch(directoryPath, () => {
-      this.$reRender();
-    });
     
-    // ファイルが変更された場合、現在開いているテーブルの更新を行うが、バグ発生中
-    // (async (directoryPath) => {
-    //   const filePaths  = await getFilePaths(directoryPath);
-    //   filePaths.forEach((filePath, key) => {
-    //     const self = this;
-    //     fs.watch(filePath, async() => {
-    //       self.recommendDeviceNames = [];
-    //       self.recommendCommunicationNames = [];
-    //       self.recommendDevices =[];
-    //       self.recommendCommunications =[];
-    //       getRecommendListFormOfJson(directoryPath);
-    //       const fileDataFormOfJson = await util.promisify(fs.readFile)(filePath, {encoding : 'utf8'})
-    //                                            .then(fileDataFormOfXml =>  parser.xml2json(fileDataFormOfXml));
-    //       switch (fileDataFormOfJson.type) {
-    //         case "device": 
-    //           self.makeRecommendDevicesTalbe(key); 
-    //           self.renderDeviceTable();
-    //           break;
-    //         case "communication":
-    //           self.makeRecommendCommunicationTable(key); 
-    //           self.renderCommunicationTable();
-    //           break;
-    //         case "node":
-    //         break;
-    //        }
-    //     });
-    //   });
-    // })();
+     // ファイルが変更された場合、現在開いているテーブルの更新を行う
+     (async (directoryPath) => {
+       const filePaths  = await getFilePaths(directoryPath);
+       filePaths.forEach((filePath, key) => {
+         const self = this;
+         fs.watch(filePath, async() => {
+          if(self.loadFileFlag === true) {
+            self.loadFileFlag = false;
+            setTimeout(() => self.loadFileFlag = true, 1000);
+            await getRecommendListFormOfJson(directoryPath);
+          }
+         });
+       });
+     })();
     
   },
     
