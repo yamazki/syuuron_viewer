@@ -4,13 +4,13 @@
     <el-aside width="250px">
       <h2>Devices</h2>
       <li v-for="(deviceName, key) in recommendDeviceNames">
-        <el-button style="width: 100%" v-on:click="makeRecommendDevicesTalbe(key); renderDeviceTable();">
+        <el-button style="width: 100%" v-on:click="makeRecommendDevicesTalbe(key);">
           {{ deviceName.replace(">","") }}
         </el-button>
       </li>
       <h2>Communications</h2>
       <li v-for="(communicationName, key) in recommendCommunicationNames">
-        <el-button style="width: 100%" v-on:click="makeRecommendCommunicationTable(key); renderCommunicationTable()">
+        <el-button style="width: 100%" v-on:click="makeRecommendCommunicationTable(key);">
           {{ communicationName.replace(">","") }}
         </el-button>
       </li>
@@ -114,10 +114,10 @@ export default {
       this.clearTableLists();
       this.selectedNumber = key;
       this.selectedType= "device";
-      // $B>r7o$rK~$?$9(BDevice$B$N?t$K$h$j7?$,JQF0(B,xml2json-light$B$N;EMM(B
+      // 条件を満たすDeviceの数により型が変動,xml2json-lightの仕様
       // 0 -> undefined
       // 1 -> Object
-      // 2$B0J>e(B -> Array
+      // 2以上 -> Array
       const Devices = this.recommendDevices[key].recommendList.recommendDeviceList.recommendDevice;
       if(typeof Devices === "undefined") {
         this.tableDevices = [];
@@ -128,16 +128,17 @@ export default {
       else {
         this.tableDevices = [Devices];
       }
+      this.renderDeviceTable();
     },
 
     makeRecommendCommunicationTable: function(key) {
       this.clearTableLists();
       this.selectedNumber = key;
       this.selectedType= "communication";
-      // $B>r7o$rK~$?$9(BDevice$B$N?t$K$h$j7?$,JQF0(B,xml2json-light$B$N;EMM(B
+      // 条件を満たすDeviceの数により型が変動,xml2json-lightの仕様
       // 0 -> undefined
       // 1 -> Object
-      // 2$B0J>e(B -> Array
+      // 2以上 -> Array
       const Communications = this.recommendCommunications[key].recommendList.recommendCommunicationList.recommendCommunication;
       if(typeof Communications === "undefined") {
         this.tableCommunications = [];
@@ -148,6 +149,7 @@ export default {
       else {
         this.tableCommunications = [Communications];
       }
+      this.renderCommunicationTable();
     }
   },
   
@@ -191,7 +193,7 @@ export default {
     getRecommendListFormOfJson(directoryPath);
     
     
-     // $B%U%!%$%k$,JQ99$5$l$?>l9g!"8=:_3+$$$F$$$k%F!<%V%k$N99?7$r9T$&(B
+     // ファイルが変更された場合、現在開いているテーブルの更新を行う
     fs.watch(directoryPath, async() => {
       if(this.loadFiles === true) {
         this.loadFiles = false;
@@ -199,12 +201,10 @@ export default {
         await getRecommendListFormOfJson(directoryPath);
         switch(this.selectedType) {
           case "device":
-            makeRecommendDevicesTalbe(this.selectedNumber);           
-            renderDeviceTable();
+            this.makeRecommendDevicesTalbe(this.selectedNumber);           
             break;
           case "communication":
-            makeRecommendCommunicationTable(this.selectedNumber);           
-            renderCommunicationTable();
+            this.makeRecommendCommunicationTable(this.selectedNumber);           
             break;
         }
         
@@ -215,5 +215,3 @@ export default {
 }
 </script>
 
-<suyle>
-</style>
