@@ -21,6 +21,16 @@ export default new Router({
       component: require('@/components/Recommend').default
     },
     {
+      path: '/quality',
+      name: 'quality-page',
+      component: require('@/components/QualityGraph').default
+    },
+    {
+      path: '/lasteval',
+      name: 'last-eval',
+      component: require('@/components/LastEval').default
+    },
+    {
       path: '*',
       redirect: '/'
     }
