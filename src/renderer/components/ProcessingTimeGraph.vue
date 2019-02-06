@@ -73,7 +73,7 @@ export default {
       },
     }
   },
-    mounted() {
+  mounted() {
     const directoryPath = 'C:/Users/ma17123/source/repos/syuuron/syuuron/XML/EvaluationResult/';
     
     const getFilePaths = async (directroyPath) =>  {

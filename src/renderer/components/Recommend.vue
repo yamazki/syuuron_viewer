@@ -19,46 +19,71 @@
       <div v-if="tableDevices.length > 0">
         <el-table
           :data="tableData"
-          stripe
-          style="width: 100%">
+          stripe>
           <el-table-column
             prop="name"
-            label="Name"
-            width="180">
+            label="Name" >
           </el-table-column>
           <el-table-column
             prop="cpu"
-            label="CPU"
-            width="180">
+            label="CPU(クロック周波数)" >
           </el-table-column>
           <el-table-column
-            prop="memory"
-            label="Memory">
+            prop="disk"
+            label="ディスク容量" >
+          </el-table-column>
+          <el-table-column
+            prop="remarks"
+            label="備考" >
           </el-table-column>
         </el-table>
       </div>
       <div v-if="tableCommunications.length > 0">
         <el-table
           :data="tableData"
-          stripe
-          style="width: 100%">
+          stripe>
           <el-table-column
             prop="name"
-            label="Name"
-            width="180">
+            label="名前"
+            >
           </el-table-column>
           <el-table-column
-            prop="distance"
-            label="Distance"
-            width="180">
+            prop="type"
+            label="通信の種類"
+            >
           </el-table-column>
           <el-table-column
             prop="speed"
-            label="Speed">
+            label="通信速度"
+            >
+          </el-table-column>
+          <el-table-column
+            prop="distance"
+            label="通信距離"
+            >
+          </el-table-column>
+          <el-table-column
+            prop="frequency"
+            label="周波数"
+            >
+          </el-table-column>
+          <el-table-column
+            prop="topology"
+            label="トポロジー"
+            >
+          </el-table-column>
+          <el-table-column
+            prop="connections"
+            label="最大接続数"
+            >
           </el-table-column>
           <el-table-column
             prop="powerSaving"
-            label="PowerSaving">
+            label="通信電力">
+          </el-table-column>
+          <el-table-column
+            prop="remarks"
+            label="備考">
           </el-table-column>
         </el-table>
       </div>
@@ -100,14 +125,21 @@ export default {
     renderDeviceTable: function() {
       this.tableDevices.forEach(device => this.tableData.push({name: device.name,
                                                                cpu: device.cpu,
-                                                               memory: device.memory}));
+                                                               memory: device.memory,
+                                                               disk: device.disk,
+                                                               remarks: device.remarks}));
     },
     
     renderCommunicationTable: function() {
       this.tableCommunications.forEach(communication => this.tableData.push({name: communication.name,
+                                                                             type: communication.type,
+                                                                             frequency: communication.frequency,
                                                                              distance: communication.distance,
+                                                                             topology: communication.topology,
                                                                              speed: communication.speed,
-                                                                             powerSaving: communication.powerSaving}));
+                                                                             connections: communication.connections,
+                                                                             powerSaving: communication.powerSaving,
+                                                                             remarks: communication.remarks}));
     },
     
     makeRecommendDevicesTalbe: function(key) {
@@ -191,7 +223,6 @@ export default {
     };
     
     getRecommendListFormOfJson(directoryPath);
-    
     
      // ファイルが変更された場合、現在開いているテーブルの更新を行う
     fs.watch(directoryPath, async() => {

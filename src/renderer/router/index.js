@@ -21,6 +21,11 @@ export default new Router({
       component: require('@/components/Recommend').default
     },
     {
+      path: '/eachquality',
+      name: 'each-quality-page',
+      component: require('@/components/EachQuality').default
+    },
+    {
       path: '/quality',
       name: 'quality-page',
       component: require('@/components/QualityGraph').default
